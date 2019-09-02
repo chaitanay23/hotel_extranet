@@ -1,0 +1,209 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="row">
+  <div class="col-sm-12 mt-4">
+    <h2 class="heder">Bank Details</h2>
+  </div>
+    <div class="col-sm-4 margin-tb">
+        <div class="pull-right ml-2">
+            <a class="eye1" href="{{ url()->previous() }}"><i class="fas fa-long-arrow-alt-left"></i></a>
+        </div>
+    </div>
+</div>
+
+@if (count($errors) > 0)
+  <div class="alert alert-danger">
+    <strong>Whoops!</strong> There were some problems with your input.<br><br>
+    <ul>
+       @foreach ($errors->all() as $error)
+         <li>{{ $error }}</li>
+       @endforeach
+    </ul>
+  </div>
+@endif
+{!! Form::open(array('route' => 'bank_detail.store','method'=>'POST')) !!}
+<div class="form form-padding">
+<div class="row mt-4">
+  <div class="col-xs-6 col-sm-6 col-md-6">
+      <div class="form-group">
+        <strong>Hotel Name:</strong>
+          <select class="form-control" id="hotel_name" name = 'hotel_id'>
+            <option value="0">Select hotel</option> 
+            <input type="hidden" value="{{$hotel_id}}" id="hotel_id_session">
+          </select>
+      </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6" style="opacity: .75">
+      <div class="form-group">
+        <strong>User Name:</strong>
+          <input type="text" name ="user_name" placeholder="User name" class="form-control readonly" id="user_name" readonly>
+          <input type="hidden" name="user_id" id="user_id">
+      </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6">
+    <div class="form-group">
+      <strong>Account Number:</strong>
+      {!! Form::number('account_no', null, array('placeholder' => 'Account number','class' => 'form-control','required'=>'required')) !!}
+    </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6">
+    <div class="form-group">
+      <strong>Account Holder:</strong>
+      {!! Form::text('account_holder', null, array('placeholder' => 'Account holder name','class' => 'form-control','required')) !!}
+    </div>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4">
+    <div class="form-group">
+      <strong>Branch Name:</strong>
+      {!! Form::text('branch_name', null, array('placeholder' => 'Branch name','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4">
+    <div class="form-group">
+      <strong>IFSC Code:</strong>
+      {!! Form::text('ifsc_code', null, array('placeholder' => 'IFSC code','class' => 'form-control','required')) !!}
+    </div>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4">
+    <div class="form-group">
+      <strong>Branch Code:</strong>
+      {!! Form::text('branch_code', null, array('placeholder' => 'Branch code','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6">
+    <div class="form-group">
+      <strong>Bank Name:</strong>
+      {!! Form::select('bank_id', $bank_all,null, array('placeholder' => 'Select bank','class' => 'form-control','id' => 'bank_all','required')) !!}
+    </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6">
+    <div class="form-group">
+      <strong>Bank Code:</strong>
+      {!! Form::text('bank_code', null, array('placeholder' => 'Bank code','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6">
+    <div class="form-group">
+      <strong>PAN Number:</strong>
+      {!! Form::text('pan_number', null, array('placeholder' => 'PAN number','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-6 col-sm-6 col-md-6">
+    <div class="form-group">
+      <strong>Name on PAN card:</strong>
+      {!! Form::text('name_of_pancard', null, array('placeholder' => 'Name on pan card','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4">
+    <div class="form-group">
+      <strong>Service Tax Number:</strong>
+      {!! Form::text('service_tx_no', null, array('placeholder' => 'Service tax number','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4">
+    <div class="form-group">
+      <strong>GST Number:</strong>
+      {!! Form::text('gst_number', null, array('placeholder' => 'GST number','class' => 'form-control','required'=>'required')) !!}
+    </div>
+  </div>
+  <div class="col-xs-4 col-sm-4 col-md-4">
+    <div class="form-group">
+      <strong>Payment Option:</strong>
+      {!! Form::select('payment_id', ['1' => 'National Electronic Funds Transfer (NEFT)', '2' => 'Credit Card'],'1', array('placeholder' => 'Select payment option','class' => 'form-control')) !!}
+    </div>
+  </div>
+  <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+    <button type="submit" class="btn btn-primary" name="submit" value="submit">Submit</button>
+    @can('discount_mapping_create')
+    <div class="text-right">
+      <button type="submit" class="btn btn-success" name="submit" value="proceed">Proceed to next</button>
+    </div>
+    @endcan
+  </div>
+</div>
+</div>
+{!! Form::close() !!}
+<script>
+  jQuery(document).ready(function($){
+    $('.commission').addClass('active-menu');
+    $('.bank').addClass('active-sub-menu');
+    var _token = $('input[name="_token"]').val();
+    var hotel_id_session = $('#hotel_id_session').val();
+    $.ajax({
+        url:"{{ route('bank_detail_hotel.fetch')}}",
+        method:"POST",
+        data:{_token:_token},
+        success:function(data)
+        {
+          $.each(data,function(key,value){
+            if(value.id == hotel_id_session){
+              jQuery('#hotel_name').attr('value',value.id).text(value.title).attr('selected','selected');
+            }
+            jQuery('#hotel_name').append($('<option></option>').attr('value',value.id).text(value.title));
+  
+          });
+        }
+      });
+
+    $(document).on('keyup','.select2-search__field',function(e){
+      var search_hotel = $(this).val();
+      var _token = $('input[name="_token"]').val();
+      var newValue = [];
+       if(search_hotel.length>=2)
+       {
+        $.ajax({
+          url:"{{ route('search_bank_hotel.fetch')}}",
+          method:"POST",
+          data:{search_hotel:search_hotel,_token:_token},
+          success:function(data)
+          {
+            $.each(data, function (key,value) {
+              //jQuery('#hotel_name').append($('<option></option>').attr('value', value.id).text(value.title));
+              var newOption = new Option(value.title, value.id, false, false);
+            	newValue.push(newOption);
+            });
+            $('#hotel_name').append(newValue);
+          }
+        });
+      }
+    });
+
+      $.ajax({
+        url:"{{ route('bank_detail_user.fetch')}}",
+        method:"POST",
+        data:{hotel_get:hotel_id_session,_token:_token},
+        success:function(data)
+        {
+          $.each(data,function(key,value){
+            jQuery('#user_name').val(value.name); 
+            jQuery('#user_id').val(value.id);
+          });
+        }
+      });
+
+    $('#hotel_name').change(function(){
+      var hotel_get = $('#hotel_name').val();
+      $.ajax({
+        url:"{{ route('bank_detail_user.fetch')}}",
+        method:"POST",
+        data:{hotel_get:hotel_get,_token:_token},
+        success:function(data)
+        {
+          $.each(data,function(key,value){
+            jQuery('#user_name').val(value.name); 
+            jQuery('#user_id').val(value.id);
+          });
+        }
+      });
+    });
+        
+    $('#hotel_name').select2({
+            allowClear:true,
+        });
+    $('#bank_all').select2({
+            allowClear:true,
+        });
+  });
+</script>
+@endsection

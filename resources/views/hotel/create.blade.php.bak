@@ -1,0 +1,442 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="row">
+    <div class="col-lg-12 margin-tb">
+        <div class="pull-left">
+            <h2>Create New Hotel</h2>
+        </div>
+        <div class="pull-right">
+            <a class="btn btn-primary" href="{{ route('hotel.index') }}"> Back</a>
+        </div>
+    </div>
+</div>
+
+@if (count($errors) > 0)
+  <div class="alert alert-danger">
+    <strong>Whoops!</strong> There were some problems with your input.<br><br>
+    <ul>
+       @foreach ($errors->all() as $error)
+         <li>{{ $error }}</li>
+       @endforeach
+    </ul>
+  </div>
+@endif
+{!! Form::open(array('route' => 'hotel.store','method'=>'POST','enctype' => 'multipart/form-data')) !!}
+
+<div class="row mt-4">
+  <!-- condition if hotel side or revenue manager logged in to system the RM and Revenue manager field will be hidden for them-->
+  <input type="hidden" value="{{$user_id}}" id="user_id_session"> 
+  @if(Auth::user()->user_role_define == '1')
+    <div class="col-xs-4 col-sm-4 col-md-4">
+        <div class="form-group">
+          <strong>Hotel Branch Name:</strong>
+            <select class="form-control" id="single_select2" name = 'user_id'>
+              <option value="0">Select hotel user</option> 
+                
+            </select>
+        </div>
+    </div>
+
+    <div class="col-xs-4 col-sm-4 col-md-4" id="rm_field">
+        <div class="form-group">
+          <strong>Relationship Manager User:</strong>
+            <select class="form-control" id="single_select_rm" name = 'rm_user_id'>
+              <option value="0">Select relationship manager</option> 
+                
+            </select>
+        </div>
+    </div>
+
+    <div class="col-xs-4 col-sm-4 col-md-4">
+        <div class="form-group">
+          <strong>Revenue Manager User:</strong>
+            <select class="form-control" id="revenue_user_id" name = 'revenue_user'>
+              <option value="0">Select revenue manager</option> 
+                
+            </select>
+        </div>
+    </div>
+    @else
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group">
+          <strong>Hotel Branch Name:</strong>
+            <select class="form-control" id="single_select2" name = 'user_id'>
+              <option value="0">Select hotel user</option> 
+                
+            </select>
+        </div>
+    </div>
+  @endif
+    <div class="col-xs-12 col-sm-12 col-md-12">
+
+        <div class="form-group">
+
+            <strong>Hotel Name:</strong>
+
+            {!! Form::text('title', null, array('placeholder' => 'Hotel name','class' => 'form-control')) !!}
+
+        </div>
+
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group">
+          <strong>Same as hotel name:</strong>
+            <label class="radio">
+              {{  Form::radio('result','same',true,array('id' => 'yes')) }}Yes</label>
+            <label class="radio">
+              {{  Form::radio('result','not_same',false,array('id' => 'no')) }}No</label>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group" id='displayName'>
+            <strong>Display Name:</strong>
+            {!! Form::text('display_name', null, array('placeholder' => 'Display name','class' => 'form-control')) !!}
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12">
+
+        <div class="form-group">
+
+            <strong>Hotel Key Facilities:</strong>
+
+            {!! Form::select('attribute_id[]', $fac,[], array('class' => 'form-control','multiple','id' => 'multiple_select2')) !!}
+
+        </div>
+
+    </div>
+    
+ <div class="container">
+
+  <ul class="nav nav-tabs">
+    <li class="nav-item active"><a class="nav-link font-weight-bold lead" data-toggle="tab" href="#detail" id="hotel_detail_tab">Hotel Details</a></li>
+   <li class="nav-item"><a class="nav-link font-weight-bold lead" data-toggle="tab" href="#address" id="address_tab">Address</a></li>
+   <li class="nav-item"> <a class="nav-link font-weight-bold lead" data-toggle="tab" href="#photo" id="photo_tab">Photos</a></li>
+ </ul>
+
+ <div class="tab-content">
+   <div id="detail" class="tab-pane">
+      <h3 class="mt-4">Hotel Details</h3>
+        <div class="col-xs-12 col-sm-12 col-md-12">
+          <!-- !st tab start-->
+          <div class="form-group">
+            <strong>Hotel Type:</strong>
+
+            {{ Form::select('hoteltype_id',$hotel_type,null,['placeholder' => 'Select hotel type','class' => 'form-control'])}}
+          </div>
+
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12">
+
+          <div class="form-group">
+            <strong>Hotel Rating:</strong>
+
+            {{ Form::select('rating',['5' => '5 Star','4' => '4 Star','3' => '3 Star','2' => '2 Star','1' => '1 Star','0' => 'No Star'],null,['placeholder' => 'Select star rating','class' => 'form-control'])}}
+          </div>
+
+        </div>
+      
+        <div style="display: inline-flex;">
+          <div class='col-xs-6 col-sm-6 col-md-6'>
+              <div class="form-group">
+                  <strong>Check In Time:</strong>
+                    {!! Form::text('check_in_time', null, array('placeholder' => 'Check in','class' => 'form-control','id' => 'check_in')) !!}
+              </div>
+          </div>
+          
+          <div class='col-xs-6 col-sm-6 col-md-6'>
+              <div class="form-group">
+                  <strong>Check Out Time:</strong>
+                    {!! Form::text('check_out_time', null, array('placeholder' => 'Check out','class' => 'form-control','id' => 'check_out')) !!}
+              </div>
+          </div>
+        </div>
+      
+      <div class="col-xs-6 col-sm-6 col-md-6">
+
+      <div class="form-group">
+        <strong>Number Of Rooms:</strong>
+
+        {!! Form::text('no_of_rooms', null, array('placeholder' => 'Number of rooms','class' => 'form-control')) !!}
+      </div>
+
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12">
+
+      <div class="form-group">
+        <strong>Hotel Description:</strong>
+
+        {{ Form::textarea('hote_description',null,['placeholder' => 'Description','class' => 'form-control','style' => 'height:60px'])}}
+      </div>
+
+    </div>
+    <div class="text-center">
+      <a class="btn btn-primary btnNext">Next</a>
+    </div>
+   </div>
+
+   <!-- End of 1st tab-->
+   <!-- 2nd tab-->
+   <div id="address" class="tab-pane fade">
+     <h3 class="mt-4">Address</h3>
+        <div class="row container">  
+          <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="form-group">
+              @csrf
+              <strong>Select City:</strong>
+                <select name='location_id' id='city_id' class="form-control dynamic" onclick="citySelect()">
+                  <option>Select city</option>
+                  @foreach($cities as $city)
+
+                  <option value={{ $city->id }}>
+                    {{$city->name}}
+                  </option>
+                  @endforeach
+                </select>
+            </div>
+          </div>
+
+          <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="form-group">
+              <strong>Select Region:</strong>
+                <select id="region" name = 'region_id' class="form-control" onclick="regionSelect()">
+                  <option value="0">Select region</option> 
+                    
+                </select>
+            </div>
+          </div>
+
+          <div class="col-xs-4 col-sm-4 col-md-4">
+            <div class="form-group">
+              <strong>Select Area:</strong>
+                <select name = 'area_id' class="form-control" id="area">
+                  <option value="0">Select area</option>
+                </select>
+            </div>
+          </div>
+        </div>
+        <script >
+          function citySelect(){
+          $(document).ready(function(){
+                if($('#city_id').val() != '')
+                {
+                  var citsec = $('#city_id option:selected').val();
+                  var _token = $('input[name="_token"]').val();
+                  $.ajax({
+                    url:"{{ route('region.fetch')}}",
+                    method: "POST",
+                    data:{citsec:citsec,_token:_token},
+                    success:function(region)
+                    {
+                      jQuery('#region').empty().append('<option selected="selected" value="">Select region</option>');
+                     
+                     $.each(region, function (key,value) {
+                      jQuery('#region').append($('<option></option>').attr('value', value.id).text(value.name));
+                      });
+                    }
+                  })
+                }
+            });
+
+          }
+          function regionSelect(){
+            $(document).ready(function(){
+                if($('#region').val() != '')
+                {
+                  var regionsec = $('#region').val();
+                  var _token = $('input[name="_token"]').val();
+                  $.ajax({
+                    url:"{{ route('area.fetch')}}",
+                    method: "POST",
+                    data:{regionsec:regionsec,_token:_token},
+                    success:function(area)
+                    {
+                      jQuery('#area').empty().append('<option selected="selected" value="">Select area</option>');
+                      $.each(area, function (key,value) {
+                      jQuery('#area').append($('<option></option>').attr('value', value.id).text(value.name));
+                      });
+                    }
+                  })
+                }
+              });
+          }
+        </script>
+
+        <div class="row container">
+          <div class="col-xs-6 col-sm-6 col-md-6">
+
+            <div class="form-group">
+
+                <strong>Longitude:</strong>
+
+                {!! Form::text('longitude', null, array('placeholder' => 'Enter longitude','class' => 'form-control')) !!}
+
+            </div>
+
+          </div>
+
+          <div class="col-xs-6 col-sm-6 col-md-6">
+
+            <div class="form-group">
+
+                <strong>Latitude:</strong>
+
+                {!! Form::text('latitude', null, array('placeholder' => 'Enter latitude','class' => 'form-control')) !!}
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12">
+
+          <div class="form-group">
+            <strong>Hotel Address:</strong>
+
+            {{ Form::textarea('address',null,['placeholder' => 'Enter address','class' => 'form-control','style' => 'height:60px'])}}
+          </div>
+
+        </div>
+
+   </div>
+   <!--End of 2nd tab
+   <div id="facility" class="tab-pane fade">
+     
+
+
+   </div>-->
+
+  <!-- 3rd tab-->
+   <div id="photo" class="tab-pane fade">
+     <h3 class="mt-4">Photos</h3>
+
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group"> 
+          <strong>Hotel Facade Image:</strong>
+          {!! Form::file('picture', array('class' => 'image form-control'))!!}
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-12 col-md-12">
+          <strong>Hotel Image:</strong>
+
+        <div class="input-group control-group increment" >
+          <input type="file" name="pictures[]" class="form-control">
+          <div class="input-group-btn"> 
+            <button class="btn btn-success add" type="button"><i class="glyphicon glyphicon-plus"></i>Add</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="clone hide">
+        <div class="control-group input-group" style="margin-top:10px">
+          <input type="file" name="pictures[]" class="form-control">
+          <div class="input-group-btn"> 
+            <button class="btn btn-danger" type="button"><i class="glyphicon glyphicon-remove"></i> Remove</button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <br/>
+        
+     <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </div>
+    
+   </div>
+   <!-- End of 3rd tab-->
+ </div>
+</div>
+</div>
+
+<script>
+  jQuery(document).ready(function($){
+    var _token = $('input[name="_token"]').val();
+    var user_id_session = $('#user_id_session').val();
+    $.ajax({
+        url:"{{ route('hotel.fetch')}}",
+        method:"POST",
+        data:{_token:_token},
+        success:function(data)
+        {
+          $.each(data, function (key,value) {
+            if(value.id == user_id_session){
+              jQuery('#single_select2').html($('<option selected="selected"></option>').attr('value',value.id).text(value.name));
+            }
+            jQuery('#single_select2').append($('<option></option>').attr('value', value.id).text(value.name));
+        });
+        }
+      });
+
+      $.ajax({
+        url:"{{route('rm.fetch')}}",
+        method:"POST",
+        data:{_token:_token},
+        success:function(data)
+        {
+          $.each(data,function(key,value){
+            jQuery('#single_select_rm').append($('<option></option>').attr('value',value.id).text(value.name));
+          });
+        }
+      });
+
+      $.ajax({
+        url:"{{route('revenue.fetch')}}",
+        method:"POST",
+        data:{_token:_token},
+        success:function(data)
+        {
+          $.each(data,function(key,value){
+            jQuery('#revenue_user_id').append($('<option></option>').attr('value',value.id).text(value.name));
+          });
+        }
+      });
+      //on load hide display name field
+      var dvname = $('#displayName');
+      dvname.css('display','none');
+      $('#no').click(function(){
+        dvname.css('display','block');
+      })
+      $('#yes').click(function(){
+        dvname.css('display','none');
+      })
+      //next button
+      $('.btnNext').click(function(){
+        console.log($('#address').trigger('click'));
+      });
+
+    //select2 for dropdown 
+
+    $('#single_select2').select2({
+            allowClear:true,
+        });
+    $('#single_select_rm').select2({
+            allowClear:true,
+        });
+    $('#revenue_user_id').select2({
+            allowClear:true,
+    });
+    $('#multiple_select2').select2({
+            allowClear:true,
+            closeOnSelect: false,
+            placeholder:'Choose facilities',
+      });
+    $('#multiple_select2').css('width','-moz-available');
+
+    });
+</script>
+
+{!! Form::close() !!}
+
+@endsection

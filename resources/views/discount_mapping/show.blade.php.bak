@@ -1,0 +1,109 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="row">
+  <div class="col-sm-12 mt-4">
+    <h2 class="heder">Discount Mapping</h2>
+  </div>
+    <div class="col-sm-4 margin-tb">
+         <div class="pull-right ml-2">
+            <a class="eye1" href="{{ route('discount_mapping.index') }}"><i class="fas fa-long-arrow-alt-left"></i></a>
+        </div>
+    </div>
+</div>
+<br/>
+<div class="container">
+  <div class="form form-padding">
+	<div class="col-xs-12 col-sm-12 col-md-12 ">
+        <div class="form-group">
+            <strong>Hotel Name:</strong>
+            <span class="show-data"> {{ $hotel->title }}</span>
+        </div>
+    </div>
+    <br/>
+    <div class="discount-card">
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group">
+          <h3 style="text-align: center;" class="card-show-dis pt-3 pb-3 mt-2 mb-4 card1">Discount Mapping For Same Day Check In</h3>
+        </div>
+      </div>
+      <div class="row base-card">
+        <div class="card-show inside-card col-md-3">
+          <div class="row">
+            <strong class="col-md-12 mt-4 pl-4">Time Slot</strong>
+            <span class="show-data col-md-12 mt-4 pl-4">12 am - 6 am</span>
+            <span class="show-data col-md-12 mt-4 pl-4">6 am - 9 am</span>
+            <span class="show-data col-md-12 mt-4 pl-4">9 am - 12 pm</span>
+            <span class="show-data col-md-12 mt-4 pl-4">12 pm - 3 pm</span>
+            <span class="show-data col-md-12 mt-4 pl-4">3 pm onwards</span>
+          </div>
+        </div>
+        <div class="card-show inside-card col-md-3">
+          <div class="row">
+            <strong class="col-md-12 mt-4 pl-4">Weekday Discount</strong>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_12_6_sdis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_6_9_sdis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_9_12_sdis}}%</span> 
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_12_3_sdis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_3_sdis}}%</span>
+          </div>
+        </div>
+        <div class="card-show inside-card col-md-3">
+          <div class="row">
+            <strong class="col-md-12 mt-4 pl-4">Weekend Discount</strong>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_12_6_edis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_6_9_edis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_9_12_edis}}%</span> 
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_12_3_edis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->today_3_edis}}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="discount-card" style="margin-top: 50px">
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="form-group">
+          <h3 style="text-align: center;" class="card-show-dis pt-3 pb-3 mt-2 mb-4 card1">Discount Mapping For Same Day Check In</h3>
+        </div>
+      </div>
+      <div class="row base-card">
+        <div class="card-show inside-card col-md-3">
+          <div class="row">
+            <strong class="col-md-12 mt-4 pl-4">Inventory</strong>
+            <span class="show-data col-md-12 mt-4 pl-4">0-2 rooms left</span>
+            <span class="show-data col-md-12 mt-4 pl-4">3-5 rooms left</span>
+            <span class="show-data col-md-12 mt-4 pl-4">6-8 rooms left</span>
+            <span class="show-data col-md-12 mt-4 pl-4">9-10 rooms left</span>
+            <span class="show-data col-md-12 mt-4 pl-4">more than 10 rooms left</span>
+          </div>
+        </div>
+        <div class="card-show inside-card col-md-3">
+          <div class="row">
+            <strong class="col-md-12 mt-4 pl-4">Weekday Discount</strong>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_2_sdis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_5_sdis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_8_sdis}}%</span> 
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_10_sdis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_11_sdis}}%</span>
+          </div>
+        </div>
+        <div class="card-show inside-card col-md-3">
+          <div class="row">
+            <strong class="col-md-12 mt-4 pl-4">Weekend Discount</strong>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_2_edis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_5_edis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_8_edis}}%</span> 
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_10_edis}}%</span>
+            <span class="show-data col-md-10 mt-4 discount-data">{{$discount->tom_11_edis}}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <script>
+    jQuery(document).ready(function($){
+      $('.discount').addClass('active-menu');
+    });
+  </script>
+@endsection
