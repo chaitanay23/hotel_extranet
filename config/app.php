@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'MagicSpree'),
+    'name' => env('APP_NAME', 'Biddr'),
 
     /*
     |--------------------------------------------------------------------------
@@ -167,9 +167,9 @@ return [
          * Package Service Providers...
 	 */
 
-	Spatie\Permission\PermissionServiceProvider::class,
-	Intervention\Image\ImageServiceProvider::class,
-	
+        Spatie\Permission\PermissionServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -179,8 +179,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-	Aginev\Datagrid\DatagridServiceProvider::class,
-	Nayjest\Grids\ServiceProvider::class,
+        Aginev\Datagrid\DatagridServiceProvider::class,
+        Nayjest\Grids\ServiceProvider::class,
     ],
 
     /*
@@ -231,9 +231,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-	'Image' => Intervention\Image\Facades\Image::class,
-	'Datagrid' => Aginev\Datagrid\Datagrid::class,
-	'Grids' => Nayjest\Grids\Grids::class,
+        'Image' => Intervention\Image\Facades\Image::class,
+        'Datagrid' => Aginev\Datagrid\Datagrid::class,
+        'Grids' => Nayjest\Grids\Grids::class,
 
     ],
 

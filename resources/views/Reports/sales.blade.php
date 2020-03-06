@@ -100,7 +100,7 @@
       @else  
       @foreach ($booking as $booking_key => $booking_value) 
       
-        @php
+      <?php
         
           $hotel_info = App\Bankdetail::where('hotel_id',$booking_value->hotel_id)->first();
             $tac_value_tax = ($booking_value->ms_commission * $mstax->tax) / 100 ;
@@ -252,7 +252,7 @@
 
           $diff = Carbon\Carbon::now()->diffInDays(Carbon\Carbon::parse($booking_value->created_at)->addDays(3));
           
-        @endphp
+        ?>
         <tr>
           <td> {{ $booking_key+1}}  </td>
           <td> {{ $booking_value->booking_code}}  </td>
@@ -266,17 +266,30 @@
           <td> {{ round($netpay) }} </td>
           @if($status)
             <td><span style="color:green">Paid</span></td>
-            <td><span style="color:green">{{ $d_date }}</span></td>
-            <td><span style="color:green">--</span></td>
-            <td><span style="color:green">--</span></td>
-            
+            <td><span style="color:green">{{ $d_date }}</span></td>            
+            <td><span style="color:green">{{$diff}} days</span></td>
+            <td>  <span style="color:green">@if($payment_info->reason == 1)
+                       Bank Details Incorrect
+                    @elseif($payment_info->reason == 2)
+                        GSTN Not Updated
+                    @elseif($payment_info->reason == 3)
+                        Confirmation from hotel pending
+                    @elseif($payment_info->reason == 4)
+                        Hotel Invoice Awaited
+                    @elseif($payment_info->reason == 5)
+                        Others
+                        @elseif($payment_info->reason == null)
+                        --
+                    @endif
+                    @if($payment_info->reason == 5) <br/> {{ $payment_info->r_txt }} @endif 
+                    </span></td>  
             <td><span style="color:green">{{Carbon\Carbon::parse($payment_info->date)->format('d/m/Y')}}</span></td>
           @else
             <td><span style="color:red">Pending</span></td>
             <td><span style="color:red">{{ $d_date }}</span></td>
             <td><span style="color:red">{{$diff}} days</span></td>
             @if($payment_info_count > 0)
-              <td>  @if($payment_info->reason == 1)
+              <td><span style="color:red">  @if($payment_info->reason == 1)
                        Bank Details Incorrect
                     @elseif($payment_info->reason == 2)
                         GSTN Not Updated
@@ -289,7 +302,7 @@
                     @endif
                     
                     @if($payment_info->reason == 5) <br/> {{ $payment_info->r_txt }} @endif 
-              </td>
+                    </span></td>
               @else
                 <td><span style="color:red">--</span></td>
             @endif
@@ -310,7 +323,7 @@
  
 </table>
         </div>
-{{ $booking->links() }}
+{{ $booking->appends(['start_date'=>$fromdate,'end_date'=>$todate])->links() }}
 
     
 
@@ -326,9 +339,9 @@
       var old_start_date = $('#start_date_old').val();
       var old_end_date = $('#end_date_old').val();
       var d = new Date();
-      var current_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
-      d.setDate(d.getDate() -30);
-      var last_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
+      var current_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
+      d.setDate(d.getDate() - 15);
+      var last_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
       $('#start_date').val(last_date);
       $('#end_date').val(current_date);
       

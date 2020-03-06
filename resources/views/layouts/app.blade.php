@@ -3,7 +3,7 @@
 <head>
 
     <!-- Tabs jquery styles and js from jquery steps -->
-    
+    <link rel="shortcut icon" sizes="180x180" href="{{asset('images/biddr_logo.png')}}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <meta charset="utf-8">
@@ -284,7 +284,7 @@
                               @endcan
                               @can('payment_report')
                               <li>
-                                <a href="{{ route('payment') }}" class="payment">Payment Repport</a>
+                                <a href="{{ route('payment') }}" class="payment">Payment Report</a>
                               </li>
                               @endcan
                               @can('sales_report')

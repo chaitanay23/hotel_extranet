@@ -269,7 +269,7 @@ class Axisroomapi extends Controller
                                    // Dailyinventory::where(['hotel_id'=>$hotel_id])->whereDate('date','=',$new_date)->update(['rooms'=>$rooms,'flag'=>1]);
                                     //New COde change by rooms_cp and rooms_ep
 
-                                   Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['rooms_cp'=>$rooms,'rooms_ep'=>$rooms,'flag'=>1,'cp_status'=>1,'ep_status'=>1]);         
+                                   Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['rooms_cp'=>$rooms,'rooms_ep'=>$rooms,'flag'=>1]);         
                                 }
 
                                 
@@ -360,31 +360,7 @@ class Axisroomapi extends Controller
 
                              //$endDate =  '2019-03-3';  
                             
-                            if(!isset($value->Single))
-                            {
-                               return response()->json(['message' => 'Single occupancy mising','status' => 'failure']); 
-                            }
-
-                            if(!isset($value->Double))
-                            {
-                               return response()->json(['message' => 'Double occupancy mising','status' => 'failure']); 
-                            }
-
-                            if(!isset($value->ExtraAdult))
-                            {
-                               return response()->json(['message' => 'ExtraAdult occupancy mising','status' => 'failure']); 
-                            }
-
-                            $single_price = $value->Single;
-                           
-                           // $single_price = 1200;
-
-                            //$double_price = 1300;
-
-                            $double_price = $value->Double;
-
-                            $extra_adult = $value->ExtraAdult;
-                             // $extra_adult = 122;
+                            
 
                             $date_1=date_create(Carbon::now()->toDateString());
                             $date_2=date_create($startDate);
@@ -408,13 +384,45 @@ class Axisroomapi extends Controller
                                     $new_date = (new Carbon($startDate))->addDays($j)->toDateString();
                                     
                                     if($rateplanId == 'EP') {
+                                        $inventory=Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->first();                                        
+                                        if(isset($value->Single))
+                                        {
+                                            $inventory->single_occupancy_price_ep = $value->Single;
+                                        }
+            
+                                        if(isset($value->Double))
+                                        {
+                                            $inventory->double_occupancy_price_ep = $value->Double;
+                                        }
+            
+                                        if(isset($value->ExtraAdult))
+                                        {
+                                            $inventory->extra_adult_ep = $value->ExtraAdult;
+                                        }
+                                        $inventory->save();
                                      //Old code
                                     // Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price'=>$single_price,'double_occupancy_price'=>$double_price,'extra_adult'=>$extra_adult]);
                                     //New code add  ep_price and cp_price 
-                                    Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_ep'=>$single_price,'double_occupancy_price_ep'=>$double_price,'extra_adult_ep'=>$extra_adult]);
+                                    // Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_ep'=>$single_price,'double_occupancy_price_ep'=>$double_price,'extra_adult_ep'=>$extra_adult]);
                                     
                                   } else {
-                                     Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_cp'=>$single_price,'double_occupancy_price_cp'=>$double_price,'extra_adult_cp'=>$extra_adult]);
+                                    $inventory=Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->first();
+                                    if(isset($value->Single))
+                                        {
+                                            $inventory->single_occupancy_price_cp = $value->Single;
+                                        }
+            
+                                        if(isset($value->Double))
+                                        {
+                                            $inventory->double_occupancy_price_cp = $value->Double;
+                                        }
+            
+                                        if(isset($value->ExtraAdult))
+                                        {
+                                            $inventory->extra_adult_cp = $value->ExtraAdult;
+                                        }
+                                        $inventory->save();
+                                    //  Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_cp'=>$single_price,'double_occupancy_price_cp'=>$double_price,'extra_adult_cp'=>$extra_adult]);
 
                                   }       
                                 }

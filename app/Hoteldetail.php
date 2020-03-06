@@ -13,7 +13,7 @@ class Hoteldetail extends Model
     /**
      * @var array
      */
-    protected $fillable = ['hotel_id','room_id','category_id','price','picture','pictures'];
+    protected $fillable = ['hotel_id','room_id','category_id','price','picture','pictures', 'extra_adult_cost_collection'];
 
     /**
      * @var array
@@ -66,7 +66,7 @@ class Hoteldetail extends Model
             
             public function roominclusions()
         {
-            return $this->belongsToMany('App\Roominclusion','roominclusion_hoteldetail');
+            return $this->belongsToMany('App\Model\Roominclusion','roominclusion_hoteldetail');
         }
 
 

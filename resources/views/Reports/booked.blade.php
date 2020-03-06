@@ -67,7 +67,7 @@
   <p>{{ $message }}</p>
 </div>
 @endif
-
+<div class="over">
 <table class="table table-striped table-dark index-table mt-2">
  <tr>
  <tr>
@@ -110,7 +110,8 @@
  
 </table>
 </div>
-{{ $booking->links() }}
+</div>
+{{ $booking->appends(['start_date'=>$fromdate,'end_date'=>$todate])->links() }}
     
 
 
@@ -129,9 +130,9 @@
       var old_start_date = $('#start_date_old').val();
       var old_end_date = $('#end_date_old').val();
       var d = new Date();
-      var current_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
-      d.setDate(d.getDate() -30);
-      var last_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
+      var current_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
+      d.setDate(d.getDate() - 15);
+      var last_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
       $('#start_date').val(last_date);
       $('#end_date').val(current_date);
       

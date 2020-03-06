@@ -96,7 +96,7 @@
         <tr> <td colspan="12" style="color: rgb(245, 165, 34);text-align:center;padding:10px;font-size:16px;"> No Record Found</td> </tr>
       @else  
       @foreach ($booking as $booking_key => $booking_value) 
-        @php
+      <?php
           $hotel_info = App\Bankdetail::where('hotel_id',$booking_value->hotel_id)->first();
             $tac_value_tax = ($booking_value->ms_commission * $mstax->tax) / 100 ;
             $tac_value_add = round($tac_value_tax + $booking_value->ms_taxes);
@@ -244,34 +244,47 @@
           $b_date = Carbon\Carbon::parse($booking_value->created_at)->format('d/m/Y');
           $d_date = Carbon\Carbon::parse($booking_value->created_at)->addDays(3)->format('d/m/Y');
           $c_date = Carbon\Carbon::now();
-
+          $u_date= Carbon\Carbon::parse($booking_value->updated_at)->addDays(3)->format('d/m/Y');
           $diff = Carbon\Carbon::now()->diffInDays(Carbon\Carbon::parse($booking_value->created_at)->addDays(3));
 
-        @endphp
+      ?>
         <tr>
           <td> {{ $booking_key+1}}  </td>
           <td> {{ $booking_value->booking_code}}  </td>
           <td>{{ $b_date }}</td>
-          <td> {{ $booking_value->title}}</td>
+          <td> @include('box.hotelinfo')</td>
           <td>@if($hotel_info!='') @if($hotel_info->payment_id == 1) NEFT @else Credit Card @endif @else -- @endif  </td>
           <td> {{ $booking_value->total_amount}}  </td>
           <td> {{ round($hotel_take_tax) }}  </td>
           <td> {{ $booking_value->ms_commission }}  </td>
           <td> {{ $tac_value_add }} </td>
           <td> {{ round($netpay) }} </td>
-          @if($status)
+          @if($status>0)
             <td><span style="color:green">Paid</span></td>
             <td><span style="color:green">{{ $d_date }}</span></td>
-            <td><span style="color:green">--</span></td>
-            <td><span style="color:green">--</span></td>
-            
+            <td><span style="color:green">{{$diff}} days</span></td>
+            <td>  <span style="color:green">@if($payment_info->reason == 1)
+                       Bank Details Incorrect
+                    @elseif($payment_info->reason == 2)
+                        GSTN Not Updated
+                    @elseif($payment_info->reason == 3)
+                        Confirmation from hotel pending
+                    @elseif($payment_info->reason == 4)
+                        Hotel Invoice Awaited
+                    @elseif($payment_info->reason == 5)
+                        Others
+                        @elseif($payment_info->reason == null)
+                        --
+                    @endif
+                    @if($payment_info->reason == 5) <br/> {{ $payment_info->r_txt }} @endif 
+                    </span></td>            
             <td><span style="color:green">{{Carbon\Carbon::parse($payment_info->date)->format('d/m/Y')}}</span></td>
           @else
             <td><span style="color:red">Pending</span></td>
             <td><span style="color:red">{{ $d_date }}</span></td>
             <td><span style="color:red">{{$diff}} days</span></td>
             @if($payment_info_count > 0)
-              <td>  @if($payment_info->reason == 1)
+              <td><span style="color:red">  @if($payment_info->reason == 1)
                        Bank Details Incorrect
                     @elseif($payment_info->reason == 2)
                         GSTN Not Updated
@@ -284,15 +297,23 @@
                     @endif
                     
                     @if($payment_info->reason == 5) <br/> {{ $payment_info->r_txt }} @endif 
-              </td>
+                    </span></td>
               @else
+              <td><select name="dreason" class='form-control input-select' onchange="Reason_for_Dealy(this.value,{{$booking_value->id }})" id="dreason{{$booking_value->id }}">
+                     <option selected disabled value="">Select Reason For Delay *</option>
+                     <option value='1'>Bank Details Incorrect</option> 
+                     <option value='2'>GSTN Not Updated</option> 
+                     <option value='3'>Confirmation from hotel pending</option> 
+                     <option value='4'>Hotel Invoice Awaited</option> 
+                     <option value='5'>Others</option>  
+                    </select>
+                    <br/>
+                <input type="texr" name="reason_txt" id="rtxt{{$booking_value->id }}" onblur="save_other_reason(this.value,{{$booking_value->id }})" style="display:none;">
+                  </td>
+                  @endif
                 <td><span style="color:red">--</span></td>
-            @endif
-            <td><span style="color:red">--</span></td>
-          @endif
-          
-          
-          <td> --</td>
+                @endif
+          <td> @include('box.payment')</td>
           <td> -- </td>
         </tr> 
       @endforeach
@@ -304,8 +325,8 @@
  </tr>
  
 </table>
-        </div>
-{{ $booking->links() }}
+</div>
+{{ $booking->appends(['start_date'=>$fromdate,'end_date'=>$todate])->links() }}
 
     
 
@@ -315,15 +336,257 @@
 	}
 </style>
 <script>
+    function showBooking() 
+    {
+      // document.getElementById("booking_data").innerHTML = '';
+      // var fromdate=document.getElementById("fromDate").value;
+      // var todate=document.getElementById("toDate").value;
+      var url   =  "{{ route('payment') }}";
+      var token = $("[name='_token']" ).val();
+
+      $('.customder').show();
+      $.ajax({
+        url: url,
+        headers: {'X-CSRF-TOKEN': token},
+        type: "get",
+        // data:'&fromdate='+fromdate+'&todate='+todate,
+        datatype: 'html',
+        success: function(data){
+        console.log(data);
+        location.reload(true);
+          // if(data.ret == 1)
+          // {
+          //   // alert(data.user_type)
+
+            // document.getElementById("booking_data").innerHTML = data.con;
+            // $('.customder').hide();
+            // $('.to_date_pay').datepicker({
+            //     dateFormat: "dd-mm-yy",
+            //     maxDate: '0'
+            // });  
+          
+          
+          // }
+        }        
+        
+        }); 
+        
+    }
+
+    function check_Payment_info(str,id) 
+    {
+      if(str == 2)
+      {
+        $('#cc_info'+id).val('');
+        $('#msbank'+id).val('');
+        $('#cc_info'+id).hide('slow');
+        $('#msbank'+id).show('slow');
+        $('#ac_number'+id).val('');
+      } 
+      else
+      {
+        $('#cc_info'+id).val('');
+        $('#msbank'+id).val('');
+        $('#msbank'+id).hide('slow');
+        $('#cc_info'+id).show('slow');
+        $('#ac_number'+id).val('');
+      }            
+    }
+
+    function change_bank_info(str,id) 
+    {
+      $('#ac_number'+id).val('');
+      var url   =  "{{ route('getBankDetails') }}";
+      var token = $("[name='_token']" ).val();
+      $('.customder').show();
+      $.ajax({
+        url: url,
+        headers: {'X-CSRF-TOKEN': token},
+        type: "post",
+        data:'&id='+str,
+        datatype: 'html',
+        success: function(data){
+          if(data.ret == 1)
+          {
+            // alert(data.user_type)
+            $('#ac_number'+id).val(data.con);
+            $('.customder').hide();
+          }
+        }        
+        
+        });
+
+    }
+
+    function change_cc_info(str,id) 
+    {
+      $('#ac_number'+id).val('');
+      var url   =  "{{ route('getCCDetails') }}";
+      var token = $("[name='_token']" ).val();
+      $('.customder').show();
+      $.ajax({
+        url: url,
+        headers: {'X-CSRF-TOKEN': token},
+        type: "post",
+        data:'&id='+str,
+        datatype: 'html',
+        success: function(data){
+          if(data.ret == 1)
+          {
+            // alert(data.user_type)
+            $('#ac_number'+id).val(data.con);
+            $('.customder').hide();
+          }
+        }        
+        
+        });         
+    }
+    function Reason_for_Dealy(str,id) 
+    {
+
+      if(str == 5)
+      {
+        $('#rtxt'+id).show('slow');
+      }
+      else
+      {
+        $('#rtxt'+id).hide('slow');
+      }
+
+      var url   =  "{{ route('paymentReason') }}";
+      var token = $("[name='_token']" ).val();
+      $('.customder').show();
+      $.ajax({
+        url: url,
+        headers: {'X-CSRF-TOKEN': token},
+        type: "post",
+        data:'&reason_id='+str+'&id='+id,
+        datatype: 'html',
+        success: function(data){
+          if(data.ret == 1)
+          {
+            
+            $('.customder').hide();
+          }
+        }        
+        
+        });         
+    }
+
+    function save_other_reason(str,id) 
+    {
+
+      if(str =='' || str == null)
+      {
+        alert('please enter other reason');
+        return false;
+      }
+
+      var url   =  "{{ route('otherPaymentReason') }}";
+      var token = $("[name='_token']" ).val();
+      $('.customder').show();
+      $.ajax({
+        url: url,
+        headers: {'X-CSRF-TOKEN': token},
+        type: "post",
+        data:'&reason='+str+'&id='+id,
+        datatype: 'html',
+        success: function(data){
+          if(data.ret == 1)
+          {
+            $('.customder').hide();
+          }
+        }        
+        
+        });         
+    }
+
+    function save_info(id)
+    {
+      var mode = $('#mode'+id).val();
+      var ac_number = $('#ac_number'+id).val();
+      var t_id = $('#t_id'+id).val();
+      var p_status = $('#p_status'+id).val();
+      var pdate = $('#pdate'+id).val();
+      var msbank = $('#msbank'+id).val();
+      var cc_info = $('#cc_info'+id).val();
+      console.log(mode,ac_number,t_id,p_status,pdate,msbank,cc_info)
+
+
+
+      if(mode == '' || mode == null)
+      {
+        alert('please select Payment mode');
+        return false;
+      }
+
+      if(mode == 2)
+      {
+        
+        if(msbank == '' || msbank == null)
+        {
+          alert('please select Bank Details');
+          return false;
+        }
+
+      }
+      else
+      {
+        if(cc_info == '' || cc_info == null)
+        {
+          alert('please select Credit Card Details');
+          return false;
+        }
+      }
+      
+      if(ac_number == '' || ac_number == null)
+      {
+        alert("A/C Number / Credit Card Number Can't be blank");
+        return false;
+      }
+
+
+      if(t_id == '' || t_id == null)
+      {
+        alert("Transaction ID Can't be blank");
+        return false;
+      }
+
+      if(p_status == '' || p_status == null)
+      {
+        alert('please Select Payment Status');
+        return false;
+      }
+
+      var url   =  "{{ route('getStorePaymentDetails') }}";
+      var token = $("[name='_token']" ).val();
+      $('.customder').show();
+      $.ajax({
+        url: url,
+        headers: {'X-CSRF-TOKEN': token},
+        type: "post",
+        data:'&booking_id='+id+'&status='+p_status+'&date='+pdate+'&mode='+mode+'&t_id='+t_id+'&ac_number='+ac_number+'&msbank='+msbank+'&cc_info='+cc_info,
+        datatype: 'html',
+        success: function(data){                     
+            $('#btn'+id).click();
+            showBooking();          
+        }        
+        
+        });
+
+
+
+    }
+
     jQuery(document).ready(function($){
       $('.fin-report').addClass('active-menu');
       $('.payment').addClass('active-sub-menu');
       var old_start_date = $('#start_date_old').val();
       var old_end_date = $('#end_date_old').val();
       var d = new Date();
-      var current_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
-      d.setDate(d.getDate() -30);
-      var last_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
+      var current_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
+      d.setDate(d.getDate() - 15);
+      var last_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
       $('#start_date').val(last_date);
       $('#end_date').val(current_date);
       

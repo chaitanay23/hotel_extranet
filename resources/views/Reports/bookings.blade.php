@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="row mt-4 mb-2">
+<div class="row mt-3 mb-2">
   <div class="col-sm-12">
         <h2 class="heder">Bookings</h2>
     </div>
@@ -66,7 +66,7 @@
 </div> -->
 
 
-<div class="container tabs-wrap mt-4">
+<div class="">
   <div class="nav-link1">
   <ul class="nav nav-tabs">
     <li><a  data-toggle="tab" class="nav-link font-weight-bold head-links lead " href="#booking_date">Booking Date </a></li>
@@ -77,10 +77,10 @@
 </div>
   <div class="tab-content">
    <div id="booking_date" class="tab-pane  tab-panel1">
-    <div class="col-xs-12 col-sm-12 col-md-12">
+    <!-- <div class="col-xs-12 col-sm-12 col-md-12"> -->
     <form method="get" action="{{url('bookings')}}" accept-charset="UTF-8">
     	
-    	<div class="row mt-4">
+    	<div class="row mt-4 col-md-12">
 	      <div class="col-xs-5 col-sm-5 col-md-5 mt-2">
         
 		        <div class="form-group">
@@ -107,7 +107,7 @@
     </div>
 </form>
     
-   </div>
+   <!-- </div> -->
  
    <div id="check_in_date" class="tab-pane tab-panel1">
    <form method="get" action="{{url('bookings')}}" accept-charset="UTF-8">
@@ -182,7 +182,7 @@
 @endif
 
 
-
+<div class="over mt-4">
 <table class="table table-striped table-dark index-table mt-2 mb-4">
  <tr>
    <th>#</th>  	 	 		 	 	 	 	
@@ -195,14 +195,14 @@
    <th>Check-out</th>
    <th>Net Payable To Hotel</th>
    <th>Guest Name</th>
-   <th>Get Voucher</th>
-
+   <th>User Voucher</th>
+   <th>Hotel Voucher</th>
    </tr>
    @if($counter==0)
         <tr> <td colspan="18" style="color: rgb(245, 165, 34);text-align:center;padding:10px;font-size:16px;"> No Record Found</td> </tr>
       @else  
    @foreach ($booking as $booking_key => $booking_value)
-        @php
+   <?php
                 $total_amt = $booking_value->extra_charge + $booking_value->total_amount;
 
                 $total_amt_tax = $booking_value->extra_charge + $booking_value->base_amount;
@@ -292,7 +292,7 @@
                 
                 $tac = App\Commission::where('hotel_id',$booking_value->hotel_id)->first();
                 $tac_count = App\Commission::where('hotel_id',$booking_value->hotel_id)->count();
-                
+                // dd($booking_value);
                 if($tac_count > 0)
                 {
                     $tac_c_percentage = $tac->commission - $tac->pbc;
@@ -325,7 +325,7 @@
                 
                
             
-            @endphp
+            ?>
    <tr>
             <td> {{ $booking_key+1 }}  </td>
             <td> {{$booking_value->Hotel->title}} </td>
@@ -343,9 +343,9 @@
     @endif
 
   
-  
+  </tr>
 </table>
-
+</div>
 
 {{ $booking->appends(['start_date'=>$fromdate,'end_date'=>$todate,'search'=>$search])->links() }}
     
@@ -362,9 +362,9 @@
       var old_start_date = $('#start_date_old').val();
       var old_end_date = $('#end_date_old').val();
       var d = new Date();
-      var current_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
-      d.setDate(d.getDate() -30);
-      var last_date = d.getFullYear()+'-'+('0'+(d.getMonth()+1))+'-'+('0'+d.getDate()).slice(-2);
+      var current_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
+      d.setDate(d.getDate() - 15);
+      var last_date = d.getFullYear() + '-' + (((d.getMonth() + 1) < 10) ? '0' + (d.getMonth() + 1) : (d.getMonth() + 1)) + '-' + ('0' + d.getDate()).slice(-2);
       $('#start_date_booking').val(last_date);
       $('#end_date_booking').val(current_date);
       $('#start_date_check_in').val(last_date);

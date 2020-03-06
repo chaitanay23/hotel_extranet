@@ -110,7 +110,21 @@ Route::group(['middleware' => ['auth']], function() {
 	Route::get('booked', 'ReportController@Booked')->name('booked');
 	Route::get('unsuccessful', 'ReportController@Unsuccessful')->name('unsuccessful');
 	Route::get('negotiable', 'ReportController@Negotiable')->name('negotiable');
-	
+	Route::get('negotiable', 'ReportController@Negotiable')->name('negotiable');
+	Route::post('getPaymentReason', 'ReportController@GetReasonForPayment')->name('paymentReason');
+	Route::post('getOtherPaymentReason', 'ReportController@GetOtherReason')->name('otherPaymentReason');
+	Route::post('getCCDetails', 'ReportController@GetCCDetails')->name('getCCDetails');
+	Route::post('getStorePaymentDetails', 'ReportController@GetPaymentDetails')->name('getStorePaymentDetails');
+	Route::post('getBankDetails', 'ReportController@GetBankDetails')->name('getBankDetails');
+	Route::get('hotels/hotelvoucher/{id}', function ($id) {
+				return view('vouchers.new_templates.hotel-voucher')->with('id',$id);
+				});
+	Route::get('users/hotelvoucher/{id}', function ($id) {
+			return view('vouchers.new_templates.booking_voucher')->with('id',$id);
+				});
+	Route::get('restaurant/Couponvoucher/{id}', function ($id) {
+			return view('vouchers.restaurant-coupon-voucher')->with('id',$id);
+				});
 });
 
 

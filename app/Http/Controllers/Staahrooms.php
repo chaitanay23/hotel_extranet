@@ -67,10 +67,10 @@ class Staahrooms extends Controller
                     foreach ($room_details as $key => $value) {
                         # code...
                         //New Code Dailyinventory find cp_status
-                       $cp_status = Dailyinventory::select('cp_status')->where(['hotel_id'=>$hotel_id,'category_id'=>$value->id,'date'=>$current_date])->first();
-                       $ep_status = Dailyinventory::select('ep_status')->where(['hotel_id'=>$hotel_id,'category_id'=>$value->id,'date'=>$current_date])->first();
+                    //    $cp_status = Dailyinventory::select('cp_status')->where(['hotel_id'=>$hotel_id,'category_id'=>$value->id,'date'=>$current_date])->first();
+                    //    $ep_status = Dailyinventory::select('ep_status')->where(['hotel_id'=>$hotel_id,'category_id'=>$value->id,'date'=>$current_date])->first();
 
-                        if($cp_status->cp_status == 1)
+                        // if($cp_status->cp_status == 1 ) As discussed with amitesh EP and Cp dont have to be checked
                         {
                             $rateplanname = 'Include Breakfast';
                             $roomtypeid = $value->id;
@@ -78,7 +78,7 @@ class Staahrooms extends Controller
 
                             $list_data[] = array('roomtypeid'=>$roomtypeid,'roomtypename'=>$value->custom_category,'rateplanid'=>$rateplanid,'rateplanname'=>$rateplanname);
                         }
-                        if($ep_status->ep_status == 1)
+                        // if($ep_status->ep_status == 1) As discussed with amitesh EP and Cp dont have to be checked
                         {
                             $rateplanname_ep = 'Room Only';
                             $roomtypeid_ep = $value->id;
@@ -86,6 +86,7 @@ class Staahrooms extends Controller
 
                             $list_data[] = array('roomtypeid'=>$roomtypeid_ep,'roomtypename'=>$value->custom_category,'rateplanid'=>$rateplanid_ep,'rateplanname'=>$rateplanname_ep);
                         }
+                        
                         
                        
                     }
@@ -226,17 +227,19 @@ class Staahrooms extends Controller
                                             //New Code
                                             if($mealplan_id == 'EP') {
                                             Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_ep'=>$single_price,'double_occupancy_price_ep'=>$double_price,'extra_adult_ep'=>$extra_price,'rooms_ep'=>$inv_value,'flag'=>1,'ep_status'=>1]);
-                                            } else if($mealplan_id == 'CP' || 'BAR') {
+                                            } else if($mealplan_id == 'CP' ||$mealplan_id == 'BAR') {
                                               Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_cp'=>$single_price,'double_occupancy_price_cp'=>$double_price,'extra_adult_cp'=>$extra_price,'rooms_cp'=>$inv_value,'flag'=>1,'cp_status'=>1]);
                                             }
 
                                         }
                                         else
                                         {
+                                            if($mealplan_id == 'EP') {
                                             Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_ep'=>$single_price,'double_occupancy_price_ep'=>$double_price,'extra_adult_ep'=>$extra_price,'rooms_ep'=>$inv_value,'flag'=>0,'rooms_ep'=>0,'ep_status'=>0]);
-
+                                        } else if($mealplan_id == 'CP' || $mealplan_id == 'BAR') {
                                              Dailyinventory::where(['hotel_id'=>$hotel_id,'category_id'=>$room_id])->whereDate('date','=',$new_date)->update(['single_occupancy_price_cp'=>$single_price,'double_occupancy_price_cp'=>$double_price,'extra_adult_cp'=>$extra_price,'rooms_cp'=>$inv_value,'flag'=>0,'rooms_cp'=>0,'cp_status'=>0]);
                                         }
+                                    }
                                                 
                                     }
 
@@ -277,11 +280,6 @@ class Staahrooms extends Controller
 
             // //echo $hotel_id;    
 
-        }
-        
-        
-                   
+        }       
     }
-    
-
 }
